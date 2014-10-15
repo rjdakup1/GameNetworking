@@ -41,14 +41,14 @@
 class Client
 {
 public:    
-    Client(TCPsocket s=NULL, std::string n="",
-           float x1=0.0f, float y1=0.0f, bool a=false)
+    Client(TCPsocket s = NULL, std::string n = "",
+           int x1 = 0, int y1= 0, bool a = false)
         : sock(s), name(n), x(x1), y(y1), active(a)
     {}
     
 	TCPsocket sock;
 	std::string name;
-	float x, y;
+	int x, y;
     bool active;
 };
 
@@ -62,8 +62,8 @@ const int MAXLEN = 1024;
 /******************************************************************************
  * Global Variables.
  *****************************************************************************/
-std::vector<Client> clients;
-int num_clients=0;
+std::vector<Client> clients; // Create vector of clients
+int num_clients = 0;
 TCPsocket server;
 
 
@@ -77,7 +77,8 @@ void reconnect(std::string name);//, std::string password)
 void add_client(TCPsocket sock, std::string name);
 
 
-// Converts a float to string
+// Converts a float to string ... WE ARE NOT USING FLOATS
+/*
 std::string ftos(float f)
 {
 	std::ostringstream buff;
@@ -85,7 +86,7 @@ std::string ftos(float f)
 
 	return buff.str();
 }
-
+*/
 
 // Converts an integer to string
 std::string itos(int i)
@@ -138,7 +139,7 @@ int find_client(TCPsocket sock)
 /* the name is always unique */
 int find_client_name(std::string name)
 {
-	for(int i=0; i < num_clients;i++)
+	for(int i = 0; i < num_clients; i++)
 		if (clients[i].name == name)
 			return i;
 		
@@ -184,8 +185,8 @@ void add_client(TCPsocket sock, std::string name)
 
 	c.name = name;
 	c.sock = sock;
-	c.x= rand() % W;
-	c.y= rand() % H;
+	c.x = rand() % W; // COME BACK HERE
+	c.y = rand() % H; // COME BACK HERE
     c.active = true;
 
 	clients.push_back(c);
@@ -207,9 +208,9 @@ void add_client(TCPsocket sock, std::string name)
 /* closes the socket of a disconnected client */
 void handle_disconnect(int i)
 {
-	std::string name=clients[i].name;
+	std::string name = clients[i].name;
 
-	if(i<0 || i>=num_clients)
+	if(i < 0 || i >= num_clients)
 		return;
 	
 	/* close the old socket, even if it's dead... */
@@ -231,7 +232,7 @@ void reconnect_client(std::string name)//, std::string password)
 /* create a socket set that has the server socket and all the client sockets */
 SDLNet_SocketSet create_sockset()
 {
-	static SDLNet_SocketSet set=NULL;
+	static SDLNet_SocketSet set = NULL;
 
 	if(set)
 		SDLNet_FreeSocketSet(set);
@@ -242,7 +243,7 @@ SDLNet_SocketSet create_sockset()
         return 0;
 	}
 	SDLNet_TCP_AddSocket(set, server);
-	for(int i=0; i < num_clients; i++)
+	for(int i = 0; i < num_clients; i++)
         if (clients[i].active)
             SDLNet_TCP_AddSocket(set, clients[i].sock);
 	return(set);
@@ -294,14 +295,29 @@ std::string generate_string_for_clients()
 // Update the position of a client
 void update_position(int i, std::string message)
 {
-	if (message == "1") 
-		clients[i].y -= 0.5f;
-	else if (message == "2")
-		clients[i].y += 0.5f;
-	else if (message == "3")
-		clients[i].x -= 0.5f;
-	else if (message == "4")
-        clients[i].x += 0.5f;
+	if (message == "1") // To move client spaceship up
+        if (clients[i].y > 0)
+            clients[i].y -= 3;
+        else
+            clients[i].y = 0;
+    
+    else if (message == "2") // To move client spaceship down
+        if (clients[i].y < H - 64)
+            clients[i].y += 3;
+        else
+            clients[i].y = W - 64; 
+
+    else if (message == "3") // To move client spaceship to the left
+        if (clients[i].x > 0)
+            clients[i].x -= 3;
+        else
+            clients[i].x = 0;
+
+    else if (message == "4") // To move client spaceship to the right
+        if (clients[i].x < W - 32)
+            clients[i].x += 3;
+        else
+            clients[i].x = W - 32;
 }
 
 
@@ -325,7 +341,7 @@ int main(int argc, char **argv)
 	}
 	
 	/* initialize SDL */
-	if(SDL_Init(0)==-1)
+	if(SDL_Init(0) == -1)
 	{
 		//printf("SDL_Init: %s\n",SDL_GetError());
 		std::cout << "ERROR" << std::endl;
@@ -333,7 +349,7 @@ int main(int argc, char **argv)
 	}
 
 	/* initialize SDL_net */
-	if(SDLNet_Init()==-1)
+	if(SDLNet_Init() == -1)
 	{
 		//printf("SDLNet_Init: %s\n",SDLNet_GetError());
 		std::cout << "ERROR" << std::endl;
@@ -342,10 +358,10 @@ int main(int argc, char **argv)
 	}
 
 	/* get the port from the commandline */
-	port=(Uint16)strtol(argv[1],NULL,0);
+	port = (Uint16)strtol(argv[1],NULL,0);
 
 	/* Resolve the argument into an IPaddress type */
-	if(SDLNet_ResolveHost(&ip,NULL,port)==-1)
+	if(SDLNet_ResolveHost(&ip, NULL, port) == -1)
 	{
 		std::cout << "SDLNet_ResolveHost: ERROR" << std::endl;
 		SDLNet_Quit();
@@ -354,7 +370,7 @@ int main(int argc, char **argv)
 	}
 
 	/* open the server socket */
-	server=SDLNet_TCP_Open(&ip);
+	server = SDLNet_TCP_Open(&ip);
 	if(!server)
 	{
 		std::cout << "SDLNet_TCP_Open ERROR" << std::endl;
@@ -383,14 +399,14 @@ int main(int argc, char **argv)
 		{
 			numready--;
 
-			sock=SDLNet_TCP_Accept(server);
+			sock = SDLNet_TCP_Accept(server);
 			if(sock)
 			{
 				std::string name;
                 
 				name = recv_message(sock);
 
-                handle_login(sock,name);
+                handle_login(sock, name);
             }
             else
                 SDLNet_TCP_Close(sock);
