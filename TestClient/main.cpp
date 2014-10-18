@@ -43,11 +43,14 @@ class Player
 {
 public:
 	Player(int x1, int y1, int num = -1, int state = 0)
-		: x(x1), y(y1), size(10), number(num), status(state)
+		: x(x1), y(y1),size(10), number(num), status(state)
 	{
         switch(num)
         {
             case 0:
+               
+                /*Image ship("images/galaxian/GalaxianGalaxip.gif");	// loads ships image
+                  Rect ships = ship.getRect();*/ 
                 color[0] = 255;
                 color[1] = 0;
                 color[2] = 0;
@@ -95,7 +98,9 @@ public:
                 color[2] = 255 / 3;
         }
 	}
+   
     
+               
     int x, y, size;
 	int number, status;
     int color[3];
@@ -204,8 +209,12 @@ int main(int argc, char **argv)
 	std::string name;
 	std::string to_server;
 	std::string from_server;
-
-
+    
+    Image ship("images/galaxian/GalaxianGalaxip.gif");	// loads ships image
+    Rect ships = ship.getRect();
+    ships.x = 300;
+	ships.y = 300;
+    
 	/* check our commandline */
 	if(argc < 4)
 	{
@@ -315,6 +324,7 @@ int main(int argc, char **argv)
         
 	    if (keypressed[LEFTARROW])
         {
+            ships.x -= 3;
 			to_server = "1";
 			send_message(to_server, sock);
 		}
@@ -323,21 +333,25 @@ int main(int argc, char **argv)
 			to_server = "2";
 			send_message(to_server, sock);
 		}
-        
+  
+
 		surface.fill(BLACK);
         
         for (int i = 0; i < players.size(); i++)
         {
             if (players[i].status)
-            {
+            { 
                 surface.lock();
                 surface.put_rect(players[i].x, players[i].y,
                                  players[i].size, players[i].size,
                                  players[i].color[0],
                                  players[i].color[1],
-                                 players[i].color[2]);
+                                 players[i].color[2]);        
                 
-                surface.unlock();
+                 // puts Ships image at rect on surface
+                surface.put_image(ship, ships);
+
+            surface.unlock();
             }
         }
 

@@ -315,6 +315,7 @@ void update_position(int i, std::string message)
     if (message == "1") // To move client spaceship to the left
         if (clients[i].x > 0)
             clients[i].x -= 3;
+   
         else
             clients[i].x = 0;
 
