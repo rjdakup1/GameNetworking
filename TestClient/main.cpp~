@@ -25,6 +25,8 @@
 #include "Constants.h"
 #include "Surface.h"
 
+//#include "MyGameObjects.h"
+
 // SDL net
 #include "SDL_net.h"
 
@@ -40,8 +42,8 @@
 class Player
 {
 public:
-	Player(float x1, float y1, int num=-1, int state=0)
-		: x(x1), y(y1), size(10.0), number(num), status(state)
+	Player(int x1, int y1, int num = -1, int state = 0)
+		: x(x1), y(y1), size(10), number(num), status(state)
 	{
         switch(num)
         {
@@ -90,13 +92,13 @@ public:
             default:
                 color[0] = 255 / 10;
                 color[1] = 255 / 5;
-                color[2] = 255 / 2.5;
+                color[2] = 255 / 3;
         }
 	}
     
-    float x, y, size;
+    int x, y, size;
 	int number, status;
-    float color[3];
+    int color[3];
 };
 
 
@@ -110,7 +112,7 @@ const int MAXLEN = 1024;
  * Global Variables.
  *****************************************************************************/
 std::vector<Player> players;
-SDL_Thread *net_thread=NULL, *local_thread=NULL;
+SDL_Thread *net_thread = NULL, *local_thread = NULL;
 int player_number = -1;
 
 
@@ -149,7 +151,7 @@ void parse_player_data(std::string message)
     std::stringstream message_stream(message);
 
     int num_players = 0, _status = 0;
-    float _x, _y;
+    int _x, _y;
     
     message_stream >> num_players;
     
@@ -203,6 +205,7 @@ int main(int argc, char **argv)
 	std::string to_server;
 	std::string from_server;
 
+
 	/* check our commandline */
 	if(argc < 4)
 	{
@@ -251,7 +254,7 @@ int main(int argc, char **argv)
 	}
 
 	/* open the server socket */
-	sock=SDLNet_TCP_Open(&ip);
+	sock = SDLNet_TCP_Open(&ip);
 	if(!sock)
 	{
 		std::cout << "SDLNet_TCP_Open ERROR" << std::endl;
@@ -260,7 +263,7 @@ int main(int argc, char **argv)
 		return 0;
 	}
 	
-	if(SDLNet_TCP_AddSocket(set,sock)==-1)
+	if(SDLNet_TCP_AddSocket(set,sock) == -1)
 	{
 		std::cout << "SDLNet_TCP_AddSocket ERROR" << std::endl;
 		SDLNet_Quit();
@@ -285,7 +288,7 @@ int main(int argc, char **argv)
 	while(1)
 	{
         std::cout << "players.size() is " << players.size() << std::endl;
-		numready=SDLNet_CheckSockets(set, 100);
+		numready = SDLNet_CheckSockets(set, 100);
         if(numready == -1)
 		{
 			std::cout << "SDLNet_CheckSockets ERROR" << std::endl;
@@ -309,7 +312,7 @@ int main(int argc, char **argv)
 		KeyPressed keypressed = get_keypressed();
 
 		to_server = "";
-		if (keypressed[UPARROW])
+		/*if (keypressed[UPARROW])
         {
 			to_server = "1";
 			send_message(to_server, sock);
@@ -319,7 +322,8 @@ int main(int argc, char **argv)
 			to_server = "2";
 			send_message(to_server, sock);
 		}
-		else if (keypressed[LEFTARROW])
+        */
+	    if (keypressed[LEFTARROW])
         {
 			to_server = "3";
 			send_message(to_server, sock);
@@ -329,10 +333,10 @@ int main(int argc, char **argv)
 			to_server = "4";
 			send_message(to_server, sock);
 		}
-
-		surface.fill(WHITE);
-
-		for (int i = 0; i < players.size(); i++)
+        
+		surface.fill(BLACK);
+        
+        for (int i = 0; i < players.size(); i++)
         {
             if (players[i].status)
             {
@@ -342,6 +346,7 @@ int main(int argc, char **argv)
                                  players[i].color[0],
                                  players[i].color[1],
                                  players[i].color[2]);
+                
                 surface.unlock();
             }
         }

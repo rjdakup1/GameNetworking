@@ -312,24 +312,15 @@ int main(int argc, char **argv)
 		KeyPressed keypressed = get_keypressed();
 
 		to_server = "";
-		if (keypressed[UPARROW])
+        
+	    if (keypressed[LEFTARROW])
         {
 			to_server = "1";
 			send_message(to_server, sock);
 		}
-		else if (keypressed[DOWNARROW])
-        {
-			to_server = "2";
-			send_message(to_server, sock);
-		}
-		else if (keypressed[LEFTARROW])
-        {
-			to_server = "3";
-			send_message(to_server, sock);
-		}
 		else if (keypressed[RIGHTARROW])
         {
-			to_server = "4";
+			to_server = "2";
 			send_message(to_server, sock);
 		}
         

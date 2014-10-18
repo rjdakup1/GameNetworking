@@ -183,17 +183,34 @@ void add_client(TCPsocket sock, std::string name)
 {	
 	Client c;
 
-	c.name = name;
-	c.sock = sock;
-	c.x = rand() % W; // COME BACK HERE
-	c.y = rand() % H; // COME BACK HERE
-    c.active = true;
+    if (num_clients == 0)
+    {
+        c.name = name;
+        c.sock = sock;
+        c.x = W % 2; // COME BACK HERE
+        c.y = 100; // COME BACK HERE
+        c.active = true;
+        
+        clients.push_back(c);
 
-	clients.push_back(c);
+       
+    }
+    else
+    {
+        c.name = name;
+        c.sock = sock;
+        c.x = W % 2; // COME BACK HERE
+        c.y = 400; // COME BACK HERE
+        c.active = true;
+        
+        clients.push_back(c);
 
-	num_clients++;
+        
+    }
 
-	std::cout << "inside add client" << std::endl;
+    num_clients++;
+
+    std::cout << "inside add client" << std::endl;
 	std::cout << "num clients: " << num_clients << std::endl;
 
 	// Send an acknowledgement
@@ -295,25 +312,13 @@ std::string generate_string_for_clients()
 // Update the position of a client
 void update_position(int i, std::string message)
 {
-	if (message == "1") // To move client spaceship up
-        if (clients[i].y > 0)
-            clients[i].y -= 3;
-        else
-            clients[i].y = 0;
-    
-    else if (message == "2") // To move client spaceship down
-        if (clients[i].y < H - 64)
-            clients[i].y += 3;
-        else
-            clients[i].y = H - 64; 
-
-    else if (message == "3") // To move client spaceship to the left
+    if (message == "1") // To move client spaceship to the left
         if (clients[i].x > 0)
             clients[i].x -= 3;
         else
             clients[i].x = 0;
 
-    else if (message == "4") // To move client spaceship to the right
+    else if (message == "2") // To move client spaceship to the right
         if (clients[i].x < W - 32)
             clients[i].x += 3;
         else
