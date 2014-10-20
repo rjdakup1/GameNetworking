@@ -1,3 +1,4 @@
+
 /******************************************************************************
  * This is the client side of the Space Shooter project for CISS465
  *****************************************************************************/
@@ -8,6 +9,7 @@
  *****************************************************************************/
 
 // Standard includes
+
 #include <cmath>
 #include <cstdio>
 #include <cstdlib>
@@ -19,13 +21,14 @@
 #include <vector>
 
 // SDL wrapper from Dr. Liow
+
 #include "Includes.h"
 #include "Event.h"
 #include "compgeom.h"
 #include "Constants.h"
 #include "Surface.h"
 
-//#include "MyGameObjects.h"
+
 
 // SDL net
 #include "SDL_net.h"
@@ -39,22 +42,19 @@
 /******************************************************************************
  * Class definitions.
  *****************************************************************************/
-class Player
+class Player 
 {
 public:
 	Player(int x1, int y1, int num = -1, int state = 0)
-		: x(x1), y(y1),size(10), number(num), status(state)
+		: x(x1), y(y1), size(10), number(num), status(state)
 	{
         switch(num)
         {
-            case 0:
-               
-                /*Image ship("images/galaxian/GalaxianGalaxip.gif");	// loads ships image
-                  Rect ships = ship.getRect();*/ 
-                color[0] = 255;
-                color[1] = 0;
-                color[2] = 0;
-                break;
+           case 0:
+               color[0] = 255;
+               color[1] = 0;
+               color[2] = 0;
+               break;
 
             case 1:
                 color[0] = 0;
@@ -67,43 +67,18 @@ public:
                 color[1] = 0;
                 color[2] = 255;
                 break;
-
-            case 3:
-                color[0] = 255;
-                color[1] = 255;
-                color[2] = 0;
-                break;
                 
-            case 4:
-                color[0] = 255;
-                color[1] = 0;
-                color[2] = 255;
-                break;
-
-            case 5:
-                color[0] = 0;
-                color[1] = 255;
-                color[2] = 255;
-                break;
-
-            case 6:
-                color[0] = 255;
-                color[1] = 255;
-                color[2] = 255;
-                break;
-
             default:
                 color[0] = 255 / 10;
                 color[1] = 255 / 5;
                 color[2] = 255 / 3;
         }
 	}
-   
-    
-               
+        
     int x, y, size;
 	int number, status;
     int color[3];
+    Rect rect;
 };
 
 
@@ -117,6 +92,9 @@ const int MAXLEN = 1024;
  * Global Variables.
  *****************************************************************************/
 std::vector<Player> players;
+std::vector <Rect> alien;
+
+// std::vector<Player> rect;
 SDL_Thread *net_thread = NULL, *local_thread = NULL;
 int player_number = -1;
 
@@ -174,6 +152,13 @@ void parse_player_data(std::string message)
             Player player(_x, _y, i, _status);
             players.push_back(player);
         }
+    }
+    for(int i = 0; i < 15; ++i)
+    {
+        if(i < alien.size())
+        {
+            message_stream >> alien[i].x >> alien[i].y;
+        }
 	}		
 }
 
@@ -209,12 +194,9 @@ int main(int argc, char **argv)
 	std::string name;
 	std::string to_server;
 	std::string from_server;
-    
-    Image ship("images/galaxian/GalaxianGalaxip.gif");	// loads ships image
-    Rect ships = ship.getRect();
-    ships.x = 300;
-	ships.y = 300;
-    
+
+   
+
 	/* check our commandline */
 	if(argc < 4)
 	{
@@ -294,6 +276,30 @@ int main(int argc, char **argv)
 	Surface surface(W, H);
 	Event event;
 
+    Image image1("images/galaxian/GalaxianGalaxip.gif");
+    Image image2("images/galaxian/GalaxianGalaxip.rotated.gif");
+   
+    Image red("images/galaxian/GalaxianRedAlien.gif");	// loads alien image
+    Image purple("images/galaxian/GalaxianPurpleAlien.gif"); // loads alien image	
+    Image blue("images/galaxian/GalaxianAquaAlien.gif");	// loads alien image
+    Image flagship("images/galaxian/GalaxianFlagship.gif");	// loads alien image
+
+    bool move = true;
+  
+    
+    for (int i = 0; i < 3; ++ i)
+    {
+        for (int j = 0; j < 5; j++)
+        {
+            Rect a(40 + (i * 30)+ (j * 30), 10 +
+                   (i * 20), 38, 38, i);    
+            alien.push_back(a);
+            
+        }
+        
+    }
+    
+    
 	while(1)
 	{
         std::cout << "players.size() is " << players.size() << std::endl;
@@ -324,7 +330,6 @@ int main(int argc, char **argv)
         
 	    if (keypressed[LEFTARROW])
         {
-            ships.x -= 3;
 			to_server = "1";
 			send_message(to_server, sock);
 		}
@@ -333,36 +338,176 @@ int main(int argc, char **argv)
 			to_server = "2";
 			send_message(to_server, sock);
 		}
-  
+   
+        
+        if(move) // moves aliens right
+        {
+            
+            for (int j = 0; j < alien.size(); j++)
+            {
+                if (move)
+                {
+                    alien[j].x += 2; 
+                }
+            }
+            for (int i = 0; i < alien.size(); i++)
+            {
+                if(alien[i].x == W - 30)
+                {
+                    move = false;
+                }
+            }
+            
+        }
+            
+        if (!move) // moves aliens left
+        {
+            
+            for (int i = 0; i < alien.size(); i++)
+            {
+                alien[i].x -= 2; 
+            }
 
+            for (int i = 0; i < alien.size(); i++)
+            {
+                if(alien[i].x == 0)
+                {
+                    move = true;
+                }
+            }
+                
+            
+        }
+
+        //========================================
+        // COPY VALUES OF PLAYER CLASS TO OUR RECT
+        //========================================
+        
+        
 		surface.fill(BLACK);
         
         for (int i = 0; i < players.size(); i++)
         {
             if (players[i].status)
-            { 
+            {
                 surface.lock();
-                surface.put_rect(players[i].x, players[i].y,
-                                 players[i].size, players[i].size,
-                                 players[i].color[0],
-                                 players[i].color[1],
-                                 players[i].color[2]);        
+              
+                players[i].rect.x = players[i].x;
+                players[i].rect.y = players[i].y;
+                if (i == 0)
+                {
+                    surface.put_image(image1, players[i].rect);
+                }
+                if (i == 1)
+                {
+                    surface.put_image(image2, players[i].rect);
+                }
                 
-                 // puts Ships image at rect on surface
-                surface.put_image(ship, ships);
-
-            surface.unlock();
+                surface.unlock();
             }
         }
+        for (int i = 0; i < alien.size(); ++i)
+        {
+            surface.lock();
+            
+            if(alien[i].color < 1) 
+            {
+                surface.put_image(flagship, alien[i]);
+            }
+            
+            if(alien[i].color >= 1 && alien[i].color < 2) 
+            {
+                surface.put_image(red, alien[i]);
+            }
+            
+            if(alien[i].color >= 2 && alien[i].color < 3) 
+            {
+                surface.put_image(purple, alien[i]);
+            }
+            
+            if(alien[i].color >= 3) 
+            {
+                surface.put_image(blue, alien[i]);
+            }
+            
+            surface.unlock();
+            
+        }
+        
 
 		surface.flip();
-
+        
 
 		delay(1);
 	}
 
 	SDLNet_Quit();
 	SDL_Quit();
-
+    
 	return(0);
 }
+
+
+
+
+//==========================================
+// SCRATCH WORK ZONE...
+// please do not touch except when necessary
+//==========================================
+
+//================================================================
+// Small Player Class written by Rotshak for testing purposes only 
+/*
+class Player
+{
+public:
+    Player(int x1, int y1, int num = -1, int state = 0)
+        :x(x1), y(y1), size(10), number(num), status(state)
+    {
+        switch(num)
+        {
+            case 0:
+                color[0] = 255;
+                color[1] = 0;
+                color[2] = 0;
+                break;
+
+            default:
+                color[0] = 255 / 10;
+                color[1] = 255 / 5;
+                color[2] = 255 / 3;
+        }
+	}
+    
+    int x, y, size;
+	int number, status;
+    int color[3];
+    Rect rect;
+};
+*/
+
+ // CASES 3 to 6...we only need two since its a two player game             
+ /*            case 3:
+                color[0] = 255;
+                color[1] = 255;
+                color[2] = 0;
+                break;
+                
+            case 4:
+                color[0] = 255;
+                color[1] = 0;
+                color[2] = 255;
+                break;
+
+            case 5:
+                color[0] = 0;
+                color[1] = 255;
+                color[2] = 255;
+                break;
+
+            case 6:
+                color[0] = 255;
+                color[1] = 255;
+                color[2] = 255;
+                break;
+ */

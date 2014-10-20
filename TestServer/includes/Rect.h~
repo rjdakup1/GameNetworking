@@ -22,8 +22,7 @@ public:
 		SDL_Rect r = {x, y, w, h};
 		return r;
 	}
-    bool move;
-	int x, y, w, h, color;
+	int x, y, w, h;
 };
 
 inline std::ostream & operator<<(std::ostream & cout, const Rect & r)

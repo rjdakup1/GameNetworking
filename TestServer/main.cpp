@@ -182,25 +182,29 @@ void handle_login(TCPsocket sock, std::string name)
 void add_client(TCPsocket sock, std::string name)
 {	
 	Client c;
+    
+	c.name = name;
+	c.sock = sock;
+	c.x = rand() % (W - 32); // COME BACK HERE
+	c.y = rand() % (H - 64); // COME BACK HERE
+    c.active = true;
 
     if (num_clients == 0)
     {
         c.name = name;
         c.sock = sock;
         c.x = W % 2; // COME BACK HERE
-        c.y = 100; // COME BACK HERE
+        c.y = H - 70; // COME BACK HERE
         c.active = true;
         
         clients.push_back(c);
-
-       
     }
     else
     {
         c.name = name;
         c.sock = sock;
         c.x = W % 2; // COME BACK HERE
-        c.y = 400; // COME BACK HERE
+        c.y = 0; // COME BACK HERE
         c.active = true;
         
         clients.push_back(c);
@@ -315,7 +319,6 @@ void update_position(int i, std::string message)
     if (message == "1") // To move client spaceship to the left
         if (clients[i].x > 0)
             clients[i].x -= 3;
-   
         else
             clients[i].x = 0;
 
