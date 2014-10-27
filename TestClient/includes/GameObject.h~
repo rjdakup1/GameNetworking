@@ -72,7 +72,7 @@ public:
         Image scoretext(font.render("SCORE: ",c));
         Rect score_text = scoretext.getRect();
         score_text.x = 250;
-        score_text.y = H - 200;
+        score_text.y = H - 35;
         
         surface.put_image(scoretext, score_text);
         
@@ -83,7 +83,7 @@ public:
         Image yourscore(font.render(strmsc.str().c_str(), b));
         Rect your_score = yourscore.getRect();
         your_score.x = 340;
-        your_score.y = H - 200;
+        your_score.y = H - 35;
         
         surface.put_image(yourscore, your_score);
     }

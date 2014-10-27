@@ -24,6 +24,9 @@
 #include "Event.h"
 #include "GameObject.h"
 
+// SDL net
+#include "SDL_net.h"
+
 
 
 void game()
@@ -443,12 +446,12 @@ void game()
                          score += 15;
                     }
                     
-                    if(alien[i].color >= 2 && alien[i].color < 3) 
+                    if(alien[i].color >= 4 && alien[i].color < 3) 
                     {
                         score += 10;
                     }
                     
-                    if(alien[i].color >= 3) 
+                    if(alien[i].color >= 8) 
                     {
                         score += 5;
                     }
@@ -593,12 +596,12 @@ void game()
                 surface.put_image(red, alien[i]);
             }
          
-            if(alien[i].color >= 2 && alien[i].color < 3 && !game_over) 
+            if(alien[i].color >= 4 && alien[i].color < 3 && !game_over) 
             {
                 surface.put_image(purple, alien[i]);
             }
                      
-            if(alien[i].color >= 3 && !game_over) 
+            if(alien[i].color >= 8 && !game_over) 
             {
                 surface.put_image(blue, alien[i]);
             }
