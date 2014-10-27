@@ -23,7 +23,7 @@ This header file also contains some useful inline functions derived from SDL.
 #include "Color.h"
 #include "Sound.h"
 #include "Font.h"
-#include "util.h"
+
 
 inline int getTicks()
 {

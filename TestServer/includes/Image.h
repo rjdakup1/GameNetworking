@@ -12,15 +12,15 @@
 
 class Image
 {
- public:
-  Image(const char * filename)
-    : image(IMG_Load(filename))
+public:
+    Image(const char * filename)
+        : image(IMG_Load(filename))
     {
       if (image == NULL)
-	{
-	  printf("Error in Image::Image(): No image file %s\n", filename);
-	  exit(1);
-	}
+      {
+          printf("Error in Image::Image(): No image file %s\n", filename);
+          exit(1);
+      }
       rect = image->clip_rect;
       //surface = SingletonSurface::getInstance();
     }
@@ -29,7 +29,7 @@ class Image
       : image(s)
       {}
       
-      ~Image()
+    ~Image()
 	{
 	  SDL_FreeSurface(image);
 	}

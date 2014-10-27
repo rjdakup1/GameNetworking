@@ -5,5 +5,4 @@
 #include "SDL_net.h"
 #include <iostream>
 
-
 #endif
