@@ -16,8 +16,8 @@
 //----------------------------------------------------------------------------
 // Constants
 //----------------------------------------------------------------------------
-const int WIDTH = 960;
-const int HEIGHT = 720;
+const int WIDTH = 640;
+const int HEIGHT = 480;
 const int BPP = 0;
 const int FLAGS = SDL_ANYFORMAT;
 
